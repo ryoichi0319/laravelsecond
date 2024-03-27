@@ -1,7 +1,12 @@
 <?php
 
+use App\Http\Controllers\ItemController;
 use App\Http\Controllers\ProfileController;
+use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\OrderController;
+use App\Http\Controllers\PostController;
+use Inertia\Inertia;
 
 /*
 |--------------------------------------------------------------------------
@@ -9,17 +14,35 @@ use Illuminate\Support\Facades\Route;
 |--------------------------------------------------------------------------
 |
 | Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "web" middleware group. Make something great!
+| routes are loaded by the RouteServiceProvider within a group which
+| contains the "web" middleware group. Now create something great!
 |
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    return Inertia::render('Welcome', [
+        'canLogin' => Route::has('login'),
+        'canRegister' => Route::has('register'),
+        'laravelVersion' => Application::VERSION,
+        'phpVersion' => PHP_VERSION,
+    ]);
 });
 
+Route::resource('order',OrderController::class);
+Route::get('/order',function(){
+    return Inertia::render('Order');
+});
+// Route::get('/order', [OrderController::class, 'index'])->name('order.index');
+Route::resource('item',ItemController::class);
+
+Route::get('/posts', [PostController::class, 'index'])->name('post.index');
+Route::get('post/create', [PostController::class, 'index'])->name('post.create');
+Route::get('post/{post}', [PostController::class, 'show'])->name('post.show');
+Route::get('post/{post}/edit',[PostController::class, 'edit'])->name('post.edit');
+Route::patch('post/{post}',[PostController::class,'update'])->name('post.update');
+Route::delete('post/{post}',[PostController::class,'destroy'])->name('post.destroy');
 Route::get('/dashboard', function () {
-    return view('dashboard');
+    return Inertia::render('Dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {

@@ -1,0 +1,52 @@
+{
+  "menu": {
+    "salad": [{
+      
+        "name": "フレッシュ",
+        "amount": 1000,
+        "quantity": 0
+      
+    },{
+     
+        "name": "チーズ",
+        "amount": 1500,
+        "quantity": 0
+      
+      
+
+    }],
+    "pizza": [{
+      
+      "name": "マルゲリータ",
+      "amount": 1000,
+      "quantity": 0
+    
+  },{
+   
+      "name": "チーズ",
+      "amount": 1500,
+      "quantity": 0
+    
+    
+
+  }],
+  "pasta": [{
+      
+    "name": "トマト",
+    "amount": 1000,
+    "quantity": 0
+  
+},
+{
+    "name": "クリーム",
+    "amount": 1500,
+    "quantity": 0
+  },
+  {
+    "name": "ペペロンチーノ",
+    "amount": 1500,
+    "quantity": 0
+  }
+]
+  }
+}

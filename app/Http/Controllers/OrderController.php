@@ -27,6 +27,14 @@ class OrderController extends Controller
           return redirect('/order');
 
    }
+   public function destroy(Request $request, Order $order)
+   {
+       $order->delete();
+       $request->session();
+       return redirect()->route('order.index')->with('message','削除しました');
+
+       //
+   }
 
 
    public function index(){
@@ -40,7 +48,7 @@ class OrderController extends Controller
     $order_id = Order::find($id);
     $user_id = auth()->id();
 
-    return view('order.show',compact('order_id'));
+    return view('order.show',compact('order_id','user_id'));
     
 
 

@@ -8,7 +8,7 @@
     </x-slot >
     <div class="max-w-4xl mx-auto" >
         <div>
-            {{$user_id}}
+            {{ $user_id}}
         </div>
        
 

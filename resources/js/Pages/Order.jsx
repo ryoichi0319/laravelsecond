@@ -1,10 +1,17 @@
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { useEffect, useState } from "react";  
+import { Container, Typography, FormControl, InputLabel, Select, MenuItem, Button, Grid } from "@mui/material";
+import { light } from "@mui/material/styles/createPalette";
 
 const Order = () => {
     const [user, setUser] = useState(null);
     const [menu, setMenu] = useState(null);
     const [orders, setOrders] = useState([]);
+    const [test, setTest] = useState(null)
+    const [items, setItems] = useState([]);
+    const [message,setMessage] = useState('')
+
+
 
     const url = 'http://localhost/item.json';
 
@@ -17,6 +24,7 @@ const Order = () => {
              console.error('fetching user data error', err);
         });
      }, []);
+     
 
     useEffect(() => {
        axios.get(url)
@@ -27,6 +35,17 @@ const Order = () => {
             console.error('fetching error', err);
        });
     }, []);
+
+    //テスト
+    // useEffect(() => {
+    //     axios.get("http://localhost/item1.json")
+    //     .then(res => {
+    //          setTest(res.data.menu);
+    //     })
+    //     .catch((err) => {
+    //          console.error('fetching error', err);
+    //     });
+    //  }, []);
     useEffect(() => {
     console.log(menu,"menu")
 
@@ -43,14 +62,15 @@ const Order = () => {
         console.log(orderIndex,"orderIndex")
         if (orderIndex !== -1) {
             const updatedOrders = [...orders];
-            updatedOrders[orderIndex] = { category, selectedItem, quantity: 0, amount };
+            updatedOrders[orderIndex] = { category, selectedItem, quantity: 1, amount };
         
             setOrders(updatedOrders);
         } else {
-            setOrders([...orders, { category, selectedItem, quantity: 0, amount }]);
+            setOrders([...orders, { category, selectedItem, quantity: 1, amount }]);
         }
+        console.log(selectedItem,"selectedItem")
+
     };
-    
     
     const handleQuantityChange = (category, event) => {
         const quantity = parseInt(event.target.value);
@@ -61,66 +81,170 @@ const Order = () => {
             setOrders(updatedOrders);
         }
     };
-//     useEffect(()=>{
-// console.log(user?.id,"user.id")
-// console.log(orders,"orders")
 
+     // 注文合計金額を計算する関数
+     const calculateTotalAmount = () => {
+        return orders.reduce((total, order) => total + (order.amount * order.quantity), 0);
+    };
+console.log(menu)
 //     },[])
     const handleSubmit = (e) => {
        e.preventDefault();
        // サーバーに注文データを送信
        axios.post("/item", { orders })
        .then(res => {
-        console.log("Data sent successfully:", res.data);
+        if (res.data.message) {
+           setMessage(res.data.message); // または他の適切な方法でメッセージを表示する
+        }
+        console.log("送信しました", res.data);
+        
+        setOrders([])
+
+        
        })
        .catch(error => {
         console.log(error);
        });
     };
+    //typeB_change
+    const handleCheckboxChange = (event) => {
+        const itemName = event.target.name;
+        if (event.target.checked) {
+            setItems([...items, itemName]);
+        } else {
+            setItems(items.filter(item => item !== itemName));
+        }
+    };
+ 
+     //typeB_submit
+     const handleTypeBSubmit = (e) => {
+        e.preventDefault();
+        // サーバーに注文データを送信
+        axios.post("/item", { items })
+        .then(res => {
+         console.log("Data sent successfully:", res.data,"res.data");
+        })
+        .catch(error => {
+         console.log(error);
+        });
+     };
 
-    console.log(orders,"orders")
+    
+
     return (
         <div>
             
             {menu && (
+                <Container maxWidth="md">
+                <Typography  gutterBottom
+                  sx={{ fontWeight: 'right', textAlign: 'center',textTransform: 'capitalize',m:1 }}>
+                    order form
+                    </Typography>
                 <form onSubmit={handleSubmit}>
+                    
                     {Object.keys(menu).map(category => (
                         <div key={category}>
                             <span className=" p-3 ">{category}</span>
-                            <select className="m-5" value={orders.find(order => order.category === category)?.selectedItem || ""} 
-                                    onChange={(e) => handleSelectChange(category, e)}>
-                                <option value="">選択してください</option>
+                            <Grid item xs={12} key={category}>
+
+                            <FormControl fullWidth>
+                          <InputLabel>Select item</InputLabel>
+                            <Select
+                            value={orders.find(order => order.category === category)?.selectedItem || ""}
+                            onChange={(e) => handleSelectChange(category, e)}
+                            variant="outlined"
+                          >
+                                <MenuItem value="">
+                                   <em>Select item</em>
+                                </MenuItem>
                                 {menu[category].map((item, index) => (
-                                    <option key={index} value={item.name}>
-                                        {item.name}
-                                        ￥{item.amount}
-                                    </option>
+                                    <MenuItem key={index} value={item.name}>
+                                    {item.name}
+                                   
+                                    ￥{item.amount}
+                                </MenuItem>
                                 ))}
                                 
-                            </select>
-                            {orders.map(order => order.category === category) && (
+                            </Select>
+                            </FormControl>
+                            </Grid>
+
+
+                            {/* {orders.map(order => order.category === category) && (
                                 <span>
                                     {orders.map((order) => order.price)}
                                 </span>
-                            )}
+                            )} */}
+                          <Grid item xs={4} className=" flex justify-end">
+
+                           <FormControl className=" w-36  ">
                             {orders.find(order => order.category === category) && (
-                                <span>
-                                    <select value={orders.find(order => order.category === category)?.quantity || 0} 
+                                    <Select value={orders.find(order => order.category === category)?.quantity || 0} 
                                                     onChange={(e) => handleQuantityChange(category, e)}>
-                                                     {[0, 1, 2, 3, 4, 5].map(value => (
-                                            <option key={value} value={value}>
+
+                                                     {[ 1, 2, 3, 4, 5].map(value => (
+                                            <MenuItem key={value} value={value} className=" w-96" >
                                                 {value}
-                                            </option>
+                                            </MenuItem>
                                         ))}
-                                    </select>
-                                    
-                                </span>
+                                    </Select>        
                             )}
-                        </div>
+                            </FormControl>
+                        </Grid>
+                             </div>
+
                     ))}
-                    <button type="submit">送信</button>
+                  <Button type="submit" variant="contained" color="primary" 
+                  fullWidth disabled={!orders.length}>
+                    Submit Order
+                    </Button >
+                    {message && !orders.length && <p className=" text-red-500">{message}</p>}
+                   
                 </form>
+                </Container>
             )}
+          <div>
+    {menu && (
+        <form onSubmit={handleTypeBSubmit}>
+        {Object.keys(menu).map(category => (
+        <div key={category} className="">
+            <h2>{category}</h2>
+            {menu[category].map((item, index) => (
+                <div key={index}>
+                    <input 
+                        onChange={handleCheckboxChange}
+                        type="checkbox" 
+                        name={`${category}-${item.name}`} // カテゴリーとアイテムの名前を組み合わせて一意な名前を作成する
+                        id={`${category}-${item.name}`} 
+                    />
+                    <label htmlFor={`${category}-${item.name}`}>
+                        {item.name} ￥{item.amount}
+                    </label>
+                </div>
+            ))}
+        </div>
+        
+    ))}
+                        <button type="submit">送信</button>
+
+    </form>
+     ) } 
+</div>
+            
+            <div>
+                合計金額: ￥{calculateTotalAmount()}
+            </div>
+
+            {/* <div>
+               {test && test.map((m,index) => (
+                <div key={index}>
+                    {m.category}
+                    {m.items[0].name}
+                </div>
+               ))}
+               {test && test[0].category}
+               
+            </div> */}
         </div>
     );
 };

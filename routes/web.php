@@ -28,12 +28,16 @@ Route::get('/', function () {
     ]);
 });
 
-Route::resource('order',OrderController::class);
-Route::get('/order',function(){
+Route::middleware('auth')->resource('order', OrderController::class);
+Route::middleware('auth')->get('/order', function () {
     return Inertia::render('Order');
 });
+// Route::middleware('auth')->get('order/create',[OrderController::class,'create'])->name('order.create');
+// Route::middleware('auth')->get('order/store',[OrderController::class,'store'])->name('order.store');
+
 // Route::get('/order', [OrderController::class, 'index'])->name('order.index');
 Route::resource('item',ItemController::class);
+
 
 Route::get('/posts', [PostController::class, 'index'])->name('post.index');
 Route::get('post/create', [PostController::class, 'index'])->name('post.create');

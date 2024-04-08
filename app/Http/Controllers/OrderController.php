@@ -23,8 +23,10 @@ class OrderController extends Controller
         ]);
         $validated['user_id'] = auth()->id();
 
-          $order = Order::create($validated);
-          return redirect('/order');
+
+    // レスポンスを返す前にリダイレクトする
+    $order = Order::create($validated);
+    return redirect('/order')->withCookie(cookie('name', 'value'));
 
    }
    public function destroy(Request $request, Order $order)

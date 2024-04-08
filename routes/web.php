@@ -7,6 +7,13 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PostController;
 use Inertia\Inertia;
+use App\Http\Controllers\MainController;
+use App\Http\Controllers\BlogController;
+use App\Http\Controllers\PaymentController;
+use App\Models\User;
+use App\Http\Controllers\PurchaseController;
+use App\Http\Controllers\SubscriptionController;
+use Illuminate\Http\Request;
 
 /*
 |--------------------------------------------------------------------------
@@ -27,6 +34,7 @@ Route::get('/', function () {
         'phpVersion' => PHP_VERSION,
     ]);
 });
+
 
 Route::middleware('auth')->resource('order', OrderController::class);
 Route::middleware('auth')->get('/order', function () {
@@ -55,4 +63,55 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
+Route::prefix('payment')->name('payment.')->group(function () {
+    Route::get('/create', [PaymentController::class, 'create'])->name('create');
+    Route::post('/store', [PaymentController::class, 'store'])->name('store');
+});
+
+
+Route::get('/subscription', function (Request $request) {
+    \Stripe\Stripe::setApiKey(config('stripe.stripe_secret_key'));
+    $user = $request->user();
+    return view('subscription', [
+        
+        'intent' => $user->createSetupIntent()
+    ]);
+})->middleware(['auth'])->name('subscription');
+
+Route::post('/user/subscribe', function (Request $request) {
+    $request->user()->newSubscription(
+        'default', 'price_1P266jDTe2j0pcnDBYmu54qQ'
+        )->create($request->paymentMethodId);
+
+    return redirect('/dashboard');
+
+})->middleware(['auth'])->name('subscribe.post');
+
+//トライアル
+// Route::post('/user/subscribe', function (Request $request) {
+//     $request->user()->newSubscription(
+//         'default', 'price_1P266jDTe2j0pcnDBYmu54qQ'
+//     )->trialDays(10)->create($request->paymentMethodId);
+
+//     return redirect('/dashboard');
+
+// })->middleware(['auth'])->name('subscribe.post');
+
+
+
+Route::get('/purchase', function () {
+    return view('purchase');
+})->middleware(['auth'])->name('purchase');
+
+Route::post('user/purchase', [PurchaseController::class, 'store'])->middleware(['auth'])->name('purchase.post');
+
+Route::get('/trial_page',[SubscriptionController::class,'subscription'])->name('trial_page');
+Route::resource('/blogs', BlogController::class)
+                ->names(['index'=>'blog.index',
+                        'create' => 'blog.create',
+                        'edit' => 'blog.edit',
+                        'update' => 'blog.update',
+                        'destroy' => 'blog.destroy',
+                        'store'=>'blog.store'])
+                ->middleware(['auth']);
 require __DIR__.'/auth.php';

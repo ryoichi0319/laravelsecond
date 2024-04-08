@@ -7,11 +7,23 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use Laravel\Cashier\Billable;
+use Stripe\Stripe;
+use Illuminate\Support\Facades\Auth;
+use Stripe\SetupIntent;
 
 class User extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable;
+    use Billable, HasApiTokens, HasFactory, Notifiable;
 
+    public function createSetupIntent(array $options = []): SetupIntent
+    {
+        // Stripe API キーを設定する
+        \Stripe\Stripe::setApiKey(config('stripe.stripe_secret_key'));
+
+        // Stripe の SetupIntent を作成する
+        return SetupIntent::create($options);
+    }
 
     public function posts(){
         return $this->hasMany((Post::class));
@@ -25,6 +37,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'trial_ends_at'
     ];
 
     /**
@@ -50,6 +63,23 @@ class User extends Authenticatable
     public function orders()
     {
         return $this->hasMany(Order::class);
+    }
+
+    public function onTrial($type = 'default', $price = null)
+    {
+        // 例として、trial_ends_at カラムが現在日時よりも後の場合はトライアル中と見なす
+        return $this->trial_ends_at > now();
+    }
+
+    /**
+     * Get the trial end date for the user.
+     *
+     * @return \DateTime|null
+     */
+    public function trialEndsAt($type="default")
+    {
+        // trial_ends_at カラムの値を返す
+        return $this->trial_ends_at;
     }
 
 }

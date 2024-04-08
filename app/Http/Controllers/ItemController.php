@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use App\Models\Order;
 use Illuminate\Support\Composer;
-
+use Illuminate\Support\Facades\Auth;
 class ItemController extends Controller
 {
     //
@@ -55,7 +55,7 @@ class ItemController extends Controller
 }
 
     public function index(){
-
+        $user = Auth::user();
         $items = Item::with('order')->get();
         $total = 0;
         foreach ($items as $item)
@@ -64,7 +64,7 @@ class ItemController extends Controller
         }
         Log::info($total);
 
-        return view('item.index',compact('items'));
+        return view('item.index',compact('items') );
 
     }
     public function show(Item $item){

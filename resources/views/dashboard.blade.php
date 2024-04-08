@@ -11,7 +11,18 @@
                 <div class="p-6 text-gray-900">
                     {{ __("You're logged in!") }}
                 </div>
+                @auth
+                    @if(auth()->user()->name)
+                        <p>{{ auth()->user()->name }}</p>
+                    @endif
+                @endauth
+                @if(auth()->user() && auth()->user()->onTrial())
+                    ユーザーはトライアル期間内です
+                @endif
+                
             </div>
         </div>
     </div>
+   
+   
 </x-app-layout>

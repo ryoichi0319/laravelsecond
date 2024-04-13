@@ -6,9 +6,11 @@ import { spacing } from '@mui/system';
 import Modal from "@/Components/Modal";
 import { useCookies } from 'react-cookie';
 import './style.css'
+import { InertiaLink } from '@inertiajs/inertia-react';
 
-const Order = () => {
+const Order = ({order_id}) => {
     const [user, setUser] = useState(null);
+    const [order,setOrder] = useState([])
     const [menu, setMenu] = useState(null);
     const [orders, setOrders] = useState([]);
     const [test, setTest] = useState(null)
@@ -20,14 +22,17 @@ const Order = () => {
     const [inputValue, setInputValue] = useState('');
 
     const elementRef = useRef(null);
+    useEffect(()=>{
+        console.log(order_id)
 
+    },[])
   useEffect(() => {
     const handleScroll = () => {
       if (elementRef.current) {
         const elementTop = elementRef.current.getBoundingClientRect().top;
         const windowHeight = window.innerHeight;
-        console.log(elementTop,"eletop")  
-        console.log(windowHeight,"windowheight")
+        // console.log(elementTop,"eletop")  
+        // console.log(windowHeight,"windowheight")
         
         // 要素が画面内に表示されたかどうかをチェック
         if (elementTop < windowHeight) {
@@ -77,8 +82,17 @@ const Order = () => {
              console.error('fetching user data error', err);
         });
      }, []);
-     
 
+     useEffect(() => {
+        axios.get('http://localhost/api/orders')
+            .then(res => {
+                setOrder(res.data); // データを取得した後、order を更新
+            })
+            .catch((err) => {
+                console.error('fetching order data error', err);
+            });
+    }, []);
+     
     useEffect(() => {
        axios.get(url)
        .then(res => {
@@ -103,17 +117,16 @@ const Order = () => {
     console.log(menu,"menu")
 
     },[])
+
+
     
     //orderIndex !== -1は既存の注文が見つかった場合(カテゴリーを始めて選んだ場合)
     //もしも既存の注文があれば新しいorders配列のカテゴリーのインデックスにあうメニューに例(category: 'salad', selectedItem: 'フレッシュ', quantity: 0)追加
     const handleSelectChange = (category, event) => {
         const selectedItem = event.target.value;
         const orderIndex = orders.findIndex(order => order.category === category);
-        console.log(category,"category")
         const selectedItemData = menu[category].find(item => item.name === selectedItem);
-        console.log(selectedItemData,"selecteditemdata")
         const amount = selectedItemData ? selectedItemData.amount : 0;
-        console.log(orderIndex,"orderIndex")
         if (orderIndex !== -1) {
             const updatedOrders = [...orders];
             updatedOrders[orderIndex] = { category, selectedItem, quantity: 1, amount };
@@ -122,7 +135,6 @@ const Order = () => {
         } else {
             setOrders([...orders, { category, selectedItem, quantity: 1, amount }]);
         }
-        console.log(selectedItem,"selectedItem")
 
     };
     
@@ -140,17 +152,15 @@ const Order = () => {
      const calculateTotalAmount = () => {
         return orders.reduce((total, order) => total + (order.amount * order.quantity), 0);
     };
-console.log(menu)
 //     },[])
     const handleSubmit = (e) => {
        e.preventDefault();
        // サーバーに注文データを送信
-       axios.post("/item", { orders })
+       axios.post("/item/store", { orders })
        .then(res => {
         if (res.data.message) {
            setMessage(res.data.message); // または他の適切な方法でメッセージを表示する
         }
-        console.log("送信しました", res.data);
         
         setOrders([])
 
@@ -196,8 +206,21 @@ console.log(menu)
         'vege': ['potato', 'onion']
     };
 
+    const people = [
+        {name: 'alice', age:25 },
+        {name: 'bob', age:30},
+        {name: 'charlie', age:35}
+    ]
+    const numbers = [1, 2, 3,4,5]
+
+    for(let i = 0; i< Math.min(people.length,numbers.length); i++){
+        // console.log(`person ${people[i].name} is ${people[i].age}
+        // years old and has number ${numbers[i]}`)
+    }
+
     return (
         <div className="">
+      
            {Object.keys(foods).map(food => (
     <div key={food}>
         <div className=" text-red-300"> {food}</div>
@@ -300,9 +323,24 @@ console.log(menu)
                     Submit Order
                     </Button >
                     {message && !orders.length && <p className=" text-red-500">{message}</p>}
-                   
+                        {order.map(order => (
+                            <div key={order.id}>
+                     <InertiaLink href={`item/order/${order.id}`}>
+                            
+                               <div className=" flex gap-5">
+                                <div>オーダーID:{order.id}</div>
+                                <div>テーブル番号:{order.table_number}</div>
+                               </div>
+                            </InertiaLink>
+                            </div>
+
+
+                        ))}
+                    
+
                 </form>
                 </Container>
+                
             )}
           <div>
     {menu && (
@@ -328,6 +366,9 @@ console.log(menu)
     ))}
                         <button type="submit">送信</button>
 
+
+                        
+
     </form>
      ) } 
 </div>
@@ -343,35 +384,13 @@ console.log(menu)
           <p>設定されたCookieの値は: {cookies.name}</p>
         )}
       </div>
-      <div>
-        a
-      </div>
-      dddd
-      <div>
-        a
-      </div>
-      <div>
-        a
-      </div>
-       <div>
-        a
-      </div>
-      <div>
-        a
-      </div> <div>
-        a
-      </div> <div>
-        a
-      </div> <div>
-        a
-      </div>
+    
 
       <div ref={elementRef}>
       <div className=" font-extrabold text-5xl text-center  ">
         this is animation
       </div>
       </div>
-      
 
             {/* <div>
                {test && test.map((m,index) => (

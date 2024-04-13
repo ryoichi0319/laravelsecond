@@ -10,10 +10,14 @@ use Inertia\Inertia;
 use App\Http\Controllers\MainController;
 use App\Http\Controllers\BlogController;
 use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\MailController;
 use App\Models\User;
 use App\Http\Controllers\PurchaseController;
 use App\Http\Controllers\SubscriptionController;
 use Illuminate\Http\Request;
+use App\Http\Controllers\HomeController;//追加
+use App\Models\Order;
+use Illuminate\Support\Facades\Log; // Logファサードのインポート
 
 /*
 |--------------------------------------------------------------------------
@@ -37,14 +41,24 @@ Route::get('/', function () {
 
 
 Route::middleware('auth')->resource('order', OrderController::class);
+Route::middleware('auth')->get('/api/orders', [OrderController::class, 'index']);
 Route::middleware('auth')->get('/order', function () {
+
+
     return Inertia::render('Order');
 });
 // Route::middleware('auth')->get('order/create',[OrderController::class,'create'])->name('order.create');
 // Route::middleware('auth')->get('order/store',[OrderController::class,'store'])->name('order.store');
 
 // Route::get('/order', [OrderController::class, 'index'])->name('order.index');
-Route::resource('item',ItemController::class);
+// Route::resource('item',ItemController::class);
+Route::get('/items',[ItemController::class, 'index'])->name('item.index');
+Route::post('item/store',[ItemController::class,'store'])->name('item.store');
+Route::get('item/order/{order}', [ItemController::class, 'show_order'])->name('item.show_order');
+Route::put('item/{item}',[ItemController::class,'update'])->name('item.update');
+Route::get('item/{item}',[ItemController::class,'show'])->name('item.show');
+Route::get('item/{item}/edit',[ItemController::class, 'edit'])->name('item.edit');
+
 
 
 Route::get('/posts', [PostController::class, 'index'])->name('post.index');
@@ -53,6 +67,7 @@ Route::get('post/{post}', [PostController::class, 'show'])->name('post.show');
 Route::get('post/{post}/edit',[PostController::class, 'edit'])->name('post.edit');
 Route::patch('post/{post}',[PostController::class,'update'])->name('post.update');
 Route::delete('post/{post}',[PostController::class,'destroy'])->name('post.destroy');
+
 Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
@@ -61,6 +76,13 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+    // Route::middleware(['2fa','verified'])->group(function(){
+    //     Route::get('/dashboard',[HomeController::class, 'index'])->name('dashboard');
+    //     Route::post('/2fa',function(){
+    //         return redirect(route('dashboard'));
+    //     })->name('2fa');
+    // });
 });
 
 Route::prefix('payment')->name('payment.')->group(function () {
@@ -86,6 +108,13 @@ Route::post('/user/subscribe', function (Request $request) {
     return redirect('/dashboard');
 
 })->middleware(['auth'])->name('subscribe.post');
+
+//メール
+Route::post('/send_mail', [MailController::class, 'send_mail'])->name('send_mail');
+Route::get('emails/test',[MailController::class,'mail']);
+Route::get('/result', function () {
+    return view('result');
+})->name('index');
 
 //トライアル
 // Route::post('/user/subscribe', function (Request $request) {

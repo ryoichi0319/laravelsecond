@@ -26,7 +26,7 @@
                     <td class="p-3">{{ $item->order_id }}</td>
                     <td class="p-3">{{ $item->status}}</td>
                     <td>
-                        <form action="{{route('item.update',$item)}}" method="post">
+                        <form action="{{ route('item.update', ['item' => $item]) }}" method="post">
                             @csrf
                             @method('PUT')
                             <button type="submit" name="status" value="processing">Processing</button>

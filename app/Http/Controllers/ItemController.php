@@ -29,6 +29,7 @@ class ItemController extends Controller
             'price' => $orderData['amount']
             ]);
     }
+    return response()->json(['message' => '送信しました'], 200);
 
 
     // $items = $request->input('items');
@@ -49,9 +50,6 @@ class ItemController extends Controller
     //     // $selectedItemsがnullの場合はエラーメッセージを返す
     //     return response()->json(['error' => 'No selected items provided'], 400);
     // }
-    
-
-    return response()->json(['message' => '送信しました'], 200);
 }
 
     public function index(){
@@ -67,7 +65,8 @@ class ItemController extends Controller
         return view('item.index',compact('items') );
 
     }
-    public function show(Item $item){
+    public function show(Item $item, Order $order){
+        
         return view('item.show',compact('item'));
     }
     public function update(Request $request, Item $item){
@@ -77,6 +76,34 @@ class ItemController extends Controller
         return redirect()->back()->with('success', 'Order status updated successfully');
 
     }
+
+    public function show_order(Request $request, Item $item,$id){
+        
+
+ // 注文 ID を使用して、注文データを取得
+ $order = Order::find($id);
+       
+ 
+
+ // アイテムを注文と共に取得
+ $items = Item::where('order_id', $id)->get();
+
+ // 合計金額を初期化
+ $total = 0;
+
+ // 各アイテムの価格と数量を使用して合計金額を計算
+ foreach ($items as $item) {
+     $total += $item->price * $item->quantity;
+ }
+
+ // 注文データに合計金額を追加
+ $order->total_amount = $total;
+
+ // 注文データを保存
+ $order->save();    
+ return view('item.order.show_order', compact('item', 'order'));
+    }
+
     public function edit(Item $item)
     {
         return view('item.edit', compact('item'));

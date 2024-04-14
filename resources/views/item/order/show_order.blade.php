@@ -32,5 +32,31 @@
             </tbody>
         </table>
     </div>
+    <a href="{{ route('order') }}" class="text-blue-600 underline block mx-auto mt-4 w-max">戻る</a>
+
+    <form method="post" action="{{route('order.destroy',$order)}}"
+    class=" flex-1">
+     @csrf
+     @method('delete')
+     <x-primary-button class="bg-red-700 ml-2">
+      　　　削除
+     </x-primary-button>
+</form>
+<div class="content">
+    <form action="{{ asset('charge') }}" method="POST">
+        {{ csrf_field() }}
+                <script
+                        src="https://checkout.stripe.com/checkout.js" class="stripe-button"
+                        data-key="{{ env('STRIPE_KEY') }}"
+                        data-amount="1000"
+                        data-name="Stripe Demo"
+                        data-label="決済をする"
+                        data-description="Online course about integrating Stripe"
+                        data-image="https://stripe.com/img/documentation/checkout/marketplace.png"
+                        data-locale="auto"
+                        data-currency="JPY">
+                </script>
+    </form>
+</div>
 </body>
 </html>

@@ -18,6 +18,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\HomeController;//追加
 use App\Models\Order;
 use Illuminate\Support\Facades\Log; // Logファサードのインポート
+use App\Http\Controllers\ChargeController;
 
 /*
 |--------------------------------------------------------------------------
@@ -40,13 +41,19 @@ Route::get('/', function () {
 });
 
 
-Route::middleware('auth')->resource('order', OrderController::class);
-Route::middleware('auth')->get('/api/orders', [OrderController::class, 'index']);
+Route::middleware('auth')->resource('order', OrderController::class)->names([
+    'index' => 'order.index',
+    'create' => 'order.create',
+    'store' => 'order.store',
+    'show' => 'order.show',
+    'edit' => 'order.edit',
+    'update' => 'order.update',
+    'destroy' => 'order.destroy',
+]);Route::middleware('auth')->get('/api/orders', [OrderController::class, 'index']);
+
 Route::middleware('auth')->get('/order', function () {
-
-
     return Inertia::render('Order');
-});
+})->name('order');
 // Route::middleware('auth')->get('order/create',[OrderController::class,'create'])->name('order.create');
 // Route::middleware('auth')->get('order/store',[OrderController::class,'store'])->name('order.store');
 
@@ -133,6 +140,9 @@ Route::get('/purchase', function () {
 })->middleware(['auth'])->name('purchase');
 
 Route::post('user/purchase', [PurchaseController::class, 'store'])->middleware(['auth'])->name('purchase.post');
+Route::post('/charge', 'ChargeController@charge');
+
+
 
 Route::get('/trial_page',[SubscriptionController::class,'subscription'])->name('trial_page');
 Route::resource('/blogs', BlogController::class)

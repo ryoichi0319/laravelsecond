@@ -15,6 +15,8 @@
         @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body>
+    <img src="data:image/png;base64, {!! base64_encode(QrCode::format('png')->size(200)->generate('https://hotpepperapi1201.vercel.app/')) !!} ">
+
     <h1>Create Order</h1>
     
     <form action="{{ route('order.store') }}" method="post">

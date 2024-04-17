@@ -101,7 +101,16 @@ const Order = ({order_id}) => {
        });
     }, []);
 
-   
+    //テスト
+    // useEffect(() => {
+    //     axios.get("http://localhost/item1.json")
+    //     .then(res => {
+    //          setTest(res.data.menu);
+    //     })
+    //     .catch((err) => {
+    //          console.error('fetching error', err);
+    //     });
+    //  }, []);
     useEffect(() => {
     console.log(menu,"menu")
 
@@ -139,8 +148,7 @@ const Order = ({order_id}) => {
 
      // 注文合計金額を計算する関数
      const calculateTotalAmount = () => {
-        const total = orders.reduce((total, order) => total + (order.amount * order.quantity), 0);
-        return total.toLocaleString();
+        return orders.reduce((total, order) => total + (order.amount * order.quantity), 0);
     };
 //     },[])
     const handleSubmit = (e) => {
@@ -160,13 +168,82 @@ const Order = ({order_id}) => {
         console.log(error);
        });
     };
-   
-   
+    //typeB_change
+    const handleCheckboxChange = (event) => {
+        const itemName = event.target.name;
+        if (event.target.checked) {
+            setItems([...items, itemName]);
+        } else {
+            setItems(items.filter(item => item !== itemName));
+        }
+    };
+ 
+     //typeB_submit
+     const handleTypeBSubmit = (e) => {
+        e.preventDefault();
+        // サーバーに注文データを送信
+        axios.post("/item", { items })
+        .then(res => {
+         console.log("Data sent successfully:", res.data,"res.data");
+        })
+        .catch(error => {
+         console.log(error);
+        });
+     };
+
+ 
+    const add = () => {
+        if (inputValue.trim() !== '') { // ユーザーが空のToDoを追加しないようにする
+            const newTodos = [...todos, { value: inputValue, boolean: false }];
+            setTodos(newTodos);
+            setInputValue(''); // 入力フィールドを空にする
+        }
+    }
+    const foods = {
+        'fruits': ['apple', 'orange'],
+        'vege': ['potato', 'onion']
+    };
+
+    const people = [
+        {name: 'alice', age:25 },
+        {name: 'bob', age:30},
+        {name: 'charlie', age:35}
+    ]
+    const numbers = [1, 2, 3,4,5]
+
+    for(let i = 0; i< Math.min(people.length,numbers.length); i++){
+        console.log(`person ${people[i].name} is ${people[i].age}
+        years old and has number ${numbers[i]}`)
+    }
+
     return (
-        <div className="italian-background text-center mx-auto max-w-2xl">
+        <div className="italian-background text-center mx-auto max-w-4xl">
             <StyledText>
 
-       
+           {/* {Object.keys(foods).map(food => (
+    <div key={food}>
+        <div className=" text-red-300"> {food}</div>
+        {foods[food].map((m, index) => (
+            <div key={index}>{m}</div>
+        ))}
+    </div>
+))}
+            <input 
+                type="text" 
+                value={inputValue} 
+                onChange={(e) => setInputValue(e.target.value)}
+            />       
+            <button onClick={add}>ボタン</button>
+            <div>
+                {todos.map((todo, index) => (
+                    <div key={index}>
+                    <div >{todo.value}</div>
+                    <input type="checkbox" value={todo.boolean}/>
+                    </div>
+                    
+                
+                ))}
+            </div> */}
 
             
             
@@ -196,15 +273,15 @@ const Order = ({order_id}) => {
                                 {menu[category].map((item, index) => (
                                     <MenuItem key={index} value={item.name}>
                                         <div className=" flex gap-10 flex-1 items-center">
-                                        <div className=" flex-1 font-mono text-xl ">
+                                        <div className=" flex-1">
                                       {item.name}
                                         </div>
                                
                                     <div className=" flex-1">
-                                        <img className="w-24 h-24" src={item.img_url} alt="" />
+                                        <img className="w-12 h-12" src={item.img_url} alt="" />
                                     </div>
                                     <div className="flex-1">
-                                   ￥{item.amount.toLocaleString()}
+                                   ￥{item.amount}
                                    </div>
                                     </div>
                                 </MenuItem>
@@ -272,18 +349,69 @@ const Order = ({order_id}) => {
                 
             )}
 
+{/**第二オーダー */}
+          {/* <div>
+    {menu && (
+        <form onSubmit={handleTypeBSubmit}>
+        {Object.keys(menu).map(category => (
+        <div key={category} className="">
+            <h2>{category}</h2>
+            {menu[category].map((item, index) => (
+                <div key={index}>
+                    <input 
+                        onChange={handleCheckboxChange}
+                        type="checkbox" 
+                        name={`${category}-${item.name}`} 
+                        id={`${category}-${item.name}`} 
+                    />
+                    <label htmlFor={`${category}-${item.name}`}>
+                        {item.name} ￥{item.amount}
+                    </label>
+                </div>
+            ))}
+        </div>
+        
+    ))}
+                        <button type="submit">送信</button>
 
-      <div className=" text-gray-800">
+
+                        
+
+    </form>
+     ) } 
+</div>
+            
+          
+      <button onClick={handleSetCookie}>Cookieを設定する</button>
+    </div> */}
+      <div>
                 合計金額: ￥{calculateTotalAmount()}
             </div>
             <div></div>
+
+    <div>
+        {cookies.name && (
+          <p>設定されたCookieの値は: {cookies.name}</p>
+        )}
+      </div>
     
 
       <div ref={elementRef}>
-    
+      <div className=" font-extrabold text-5xl text-center  ">
+        this is animation
+      </div>
       </div>
 
-         
+            {/* <div>
+               {test && test.map((m,index) => (
+                <div key={index}>
+                    {m.category}
+                    {m.items[0].name}
+                </div>
+               ))}
+               {test && test[0].category}
+               
+            </div> */}
             </StyledText>
         </div>
     );

@@ -4,13 +4,17 @@
       
         "name": "フレッシュ",
         "amount": 1000,
-        "quantity": 0
+        "quantity": 0,
+        "img_url": "/img/カルパッチョ.jpg"
+
+        
       
     },{
      
         "name": "チーズ",
         "amount": 1500,
-        "quantity": 0
+        "quantity": 0,
+        "img_url": "/img/カルパッチョ.jpg"
       
       
 
@@ -19,13 +23,16 @@
       
       "name": "マルゲリータ",
       "amount": 1000,
-      "quantity": 0
+      "quantity": 0,
+      "img_url": "/img/マルゲリータ.jpg"
+
     
   },{
    
       "name": "チーズ",
       "amount": 1500,
-      "quantity": 0
+      "quantity": 0,
+      "img_url": "/img/チーズピザ.jpg"
     
     
 
@@ -34,18 +41,21 @@
       
     "name": "トマト",
     "amount": 1000,
-    "quantity": 0
+    "quantity": 0,
+    "img_url": "/img/トマト.jpg"
   
 },
 {
     "name": "クリーム",
     "amount": 1500,
-    "quantity": 0
+    "quantity": 0,
+    "img_url": "/img/クリーム.jpg"
   },
   {
     "name": "ペペロンチーノ",
     "amount": 1500,
-    "quantity": 0
+    "quantity": 0,
+    "img_url":"/img/ペペロンチーノ.jpg"
   }
 ]
   }

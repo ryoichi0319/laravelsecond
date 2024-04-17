@@ -40,8 +40,19 @@ Route::get('/', function () {
     ]);
 });
 
+Route::get('/dashboard', function () {
+    return Inertia::render('Dashboard');
+})->middleware(['auth', 'verified'])->name('dashboard');
 
-Route::middleware('auth')->resource('order', OrderController::class)->names([
+// Route::get('/', function () {
+//     return view('welcome');
+// });
+// Route::get('/dashboard', function () {
+//     return view('dashboard');
+// })->middleware(['auth', 'verified'])->name('dashboard');
+
+
+Route::resource('order', OrderController::class)->names([
     'index' => 'order.index',
     'create' => 'order.create',
     'store' => 'order.store',
@@ -49,11 +60,16 @@ Route::middleware('auth')->resource('order', OrderController::class)->names([
     'edit' => 'order.edit',
     'update' => 'order.update',
     'destroy' => 'order.destroy',
-]);Route::middleware('auth')->get('/api/orders', [OrderController::class, 'index']);
+])->middleware('auth');
+
+Route::middleware('auth')->get('/api/orders', [OrderController::class, 'index']);
 
 Route::middleware('auth')->get('/order', function () {
     return Inertia::render('Order');
 })->name('order');
+Route::middleware('auth')->get('/order_start', function () {
+    return Inertia::render('Order_start');
+})->name('order_start');
 // Route::middleware('auth')->get('order/create',[OrderController::class,'create'])->name('order.create');
 // Route::middleware('auth')->get('order/store',[OrderController::class,'store'])->name('order.store');
 
@@ -65,6 +81,8 @@ Route::get('item/order/{order}', [ItemController::class, 'show_order'])->name('i
 Route::put('item/{item}',[ItemController::class,'update'])->name('item.update');
 Route::get('item/{item}',[ItemController::class,'show'])->name('item.show');
 Route::get('item/{item}/edit',[ItemController::class, 'edit'])->name('item.edit');
+Route::get('/items/group_order', 'ItemController@index_group_order')->name('item.index_group_order');
+
 
 
 
@@ -75,9 +93,8 @@ Route::get('post/{post}/edit',[PostController::class, 'edit'])->name('post.edit'
 Route::patch('post/{post}',[PostController::class,'update'])->name('post.update');
 Route::delete('post/{post}',[PostController::class,'destroy'])->name('post.destroy');
 
-Route::get('/dashboard', function () {
-    return Inertia::render('Dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+
+
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -123,6 +140,8 @@ Route::get('/result', function () {
     return view('result');
 })->name('index');
 
+
+
 //トライアル
 // Route::post('/user/subscribe', function (Request $request) {
 //     $request->user()->newSubscription(
@@ -140,8 +159,7 @@ Route::get('/purchase', function () {
 })->middleware(['auth'])->name('purchase');
 
 Route::post('user/purchase', [PurchaseController::class, 'store'])->middleware(['auth'])->name('purchase.post');
-Route::post('/charge', 'ChargeController@charge');
-
+Route::post('/charge',[ChargeController::class,'charge'])->name('charge');
 
 
 Route::get('/trial_page',[SubscriptionController::class,'subscription'])->name('trial_page');

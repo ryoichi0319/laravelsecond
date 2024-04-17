@@ -15,7 +15,6 @@ class MailController extends Controller
     public function send_mail(){
         $user = Auth::user();
         $name = $user->name;
-        Log::info($user);
         $emails = $user->email;
         Mail::to($emails)->send(new SendTestMail($name));
 

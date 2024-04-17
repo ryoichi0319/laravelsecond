@@ -23,9 +23,9 @@ class OrderController extends Controller
         ]);
         $validated['user_id'] = auth()->id();
 
-
     // レスポンスを返す前にリダイレクトする
     $order = Order::create($validated);
+    
     return redirect('/order')->withCookie(cookie('name', 'value'));
 
    }
@@ -49,8 +49,7 @@ class OrderController extends Controller
    {
     $order = Order::find($id);
 
-    // ログに注文データを出力
-    Log::info($order);
+    
 
     // ユーザー ID を取得
     $user_id = auth()->id();
@@ -66,7 +65,7 @@ class OrderController extends Controller
         $total += $item->price * $item->quantity;
     }
 
-    // ログに合計金額を出力
+   
     Log::info($total);
 
     // 注文データに合計金額を追加

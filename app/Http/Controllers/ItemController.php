@@ -54,7 +54,9 @@ class ItemController extends Controller
 
     public function index(){
         $user = Auth::user();
-        $items = Item::with('order')->get();
+        $items = Item::with('order')->orderBy('created_at', 'desc')->get();
+        $group_items = Item::orderBy('order_id')->get()->groupBy('order_id');
+
         $total = 0;
         foreach ($items as $item)
         {
@@ -62,7 +64,7 @@ class ItemController extends Controller
         }
         Log::info($total);
 
-        return view('item.index',compact('items') );
+        return view('item.index',compact('items','group_items') );
 
     }
     public function show(Item $item, Order $order){
@@ -83,8 +85,6 @@ class ItemController extends Controller
  // 注文 ID を使用して、注文データを取得
  $order = Order::find($id);
        
- 
-
  // アイテムを注文と共に取得
  $items = Item::where('order_id', $id)->get();
 

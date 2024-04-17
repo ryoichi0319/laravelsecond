@@ -20,16 +20,17 @@
     <table>
         <thead>
             <tr>
-                <th class="p-3">Name</th>
-                <th class="p-3">Price</th>
-                <th class="p-3">Quantity</th>
-                <th class="p-3">Order ID</th>
-                <th class="p-3">Status</th>
-                <th class="p-3">Total Amount</th>
-                <th class="p-3">created at</th>
+                <th class="p-3">名前</th>
+                <th class="p-3">数</th>
+                <th class="p-3">オーダーID<button onclick="sortTable()">グループボタン</button></th>
+                <th class="p-3">状態</th>
+                <th class="p-3">価格</th>
+                <th class="p-3">会計</th>
+                <th class="p-3">オーダー順</th>
 
             </tr>
         </thead>
+
         <tbody>
             @php
             $orderTotals = [];
@@ -43,12 +44,12 @@
                 $orderTotals[$item->order_id] = ($orderTotals[$item->order_id] ?? 0) + $totalAmount
             @endphp
                 <tr class=" ">
-                    <td class="p-3 text-right">{{ $item->name }}</td>
-                    <td class="p-3 text-right">{{ $item->price }}</td>
+                    <td class="p-3 text-right {{$item->status === 'pending' ? 'text-red-500 text-xl' : ''}}">{{ $item->name }}</td>
                     <td class="p-3 text-right">{{ $item->quantity }}</td>
                     <td class="p-3 text-right">{{ $item->order_id }}</td>
                     <td class="p-3 text-right">{{ $item->status }}</td>
-                    <td class="p-3 text-right">{{ $totalAmount }}</td>
+                    <td class="p-3 text-right">{{ $item->price }}</td>
+                    <td class="p-3 text-center">{{ number_format($totalAmount)}}円</td>
                     <td class="p-3 text-right">{{ $item->created_at }}</td>
                     <td>
                         <form action="{{ route('item.update', $item) }}" method="post">
@@ -72,3 +73,20 @@
     </table>
 </body>
 </html>
+<script>
+    function sortTable() {
+    // Ajaxリクエストを送信して新しい順序を取得し、テーブルを再レンダリングする
+    $.ajax({
+        url: "{{ route('item.index') }}",
+        type: "GET",
+        success: function(response) {
+            // テーブルを再レンダリングする
+            // responseを使用して新しい順序でテーブルを再構築する
+        },
+        error: function(xhr, status, error) {
+            // エラー処理
+            console.error(error);
+        }
+    });
+}
+</script>

@@ -48,14 +48,16 @@
                 <script
                         src="https://checkout.stripe.com/checkout.js" class="stripe-button"
                         data-key="{{ env('STRIPE_KEY') }}"
-                        data-amount="1000"
+                        data-amount="{{$order->total_amount}}"
                         data-name="Stripe Demo"
                         data-label="決済をする"
                         data-description="Online course about integrating Stripe"
-                        data-image="https://stripe.com/img/documentation/checkout/marketplace.png"
+                        data-image="https://i.imgur.com/EHyR2nP.png"
                         data-locale="auto"
                         data-currency="JPY">
                 </script>
+                    <input type="hidden" name="id" value="{{ $order->id }}">
+
     </form>
 </div>
 </body>

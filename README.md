@@ -24,3 +24,6 @@ Route::get('/dashboard', function () {
 
 スケジュール app/console
 sail artisan schedule:work
+
+sort
+config.app.phpにサービスプロバイダ、エイリアスを追加する

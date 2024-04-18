@@ -189,26 +189,23 @@ const Order = ({order_id}) => {
                             value={orders.find(order => order.category === category)?.selectedItem || ""}
                             onChange={(e) => handleSelectChange(category, e)}
                             variant="outlined"
+                            
                           >
                                 <MenuItem value="">
                                    <em>Select item</em>
                                 </MenuItem>
                                 {menu[category].map((item, index) => (
-                                    <MenuItem key={index} value={item.name}>
-                                        <div className=" flex gap-10 flex-1 items-center">
-                                        <div className=" flex-1 font-mono text-xl ">
-                                      {item.name}
-                                        </div>
-                               
-                                    <div className=" flex-1">
-                                        <img className="w-24 h-24" src={item.img_url} alt="" />
-                                    </div>
-                                    <div className="flex-1">
-                                   ￥{item.amount.toLocaleString()}
-                                   </div>
-                                    </div>
-                                </MenuItem>
-                                ))}
+                        <MenuItem key={item.id} value={item.name}>
+                            <div className="flex items-center flex-1">
+                                <div className="w-3/5 font-mono text-xl">{item.name}</div>
+                                <div className="w-1/5">￥{item.amount.toLocaleString()}</div>
+                                <div className="w-1/5">
+                                    <img className="w-24 h-24 rounded-md shadow-md" src={item.img_url} alt="" />
+                                </div>
+                            </div>
+                        </MenuItem>
+))}
+
                                 
                             </Select>
                             </FormControl>

@@ -54,7 +54,7 @@ class ItemController extends Controller
 
     public function index(){
         $user = Auth::user();
-        $items = Item::with('order')->orderBy('created_at', 'desc')->get();
+        $items = Item::sortable()->with('order')->orderBy('created_at', 'desc')->get();
         $group_items = Item::orderBy('order_id')->get()->groupBy('order_id');
 
         $total = 0;
@@ -63,7 +63,7 @@ class ItemController extends Controller
             $total += $item->price * $item->quantity;
         }
         Log::info($total);
-
+        
         return view('item.index',compact('items','group_items') );
 
     }

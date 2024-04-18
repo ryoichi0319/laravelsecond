@@ -163,6 +163,8 @@ return [
         /*
          * Application Service Providers...
          */
+        Kyslik\ColumnSortable\ColumnSortableServiceProvider::class,
+
         SimpleSoftwareIO\QrCode\QrCodeServiceProvider::class,
 
         App\Providers\AppServiceProvider::class,

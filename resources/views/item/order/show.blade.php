@@ -35,14 +35,15 @@
     <a href="{{ route('order') }}" class="text-blue-600 underline block mx-auto mt-4 w-max">戻る</a>
 
     <form method="post" action="{{route('order.destroy',$order)}}"
-    class=" flex-1">
+           class=" flex justify-end mr-10 ">
      @csrf
      @method('delete')
-     <x-primary-button class="bg-red-700 ml-2">
-      　　　削除
+    
+     <x-primary-button class="   ">
+      削除
      </x-primary-button>
 </form>
-<div class="content">
+<div class="content flex justify-center mt-10 ">
     <form action="{{ asset('charge') }}" method="POST">
         {{ csrf_field() }}
                 <script
@@ -54,7 +55,9 @@
                         data-description="Online course about integrating Stripe"
                         data-image="https://i.imgur.com/EHyR2nP.png"
                         data-locale="auto"
-                        data-currency="JPY">
+                        data-currency="JPY"
+                        
+                        >
                 </script>
                     <input type="hidden" name="id" value="{{ $order->id }}">
 

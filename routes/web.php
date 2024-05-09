@@ -14,12 +14,13 @@ use App\Http\Controllers\MailController;
 use App\Models\User;
 use App\Http\Controllers\PurchaseController;
 use App\Http\Controllers\SubscriptionController;
+use App\Http\Controllers\UploadController;
 use Illuminate\Http\Request;
 use App\Http\Controllers\HomeController;//追加
 use App\Models\Order;
 use Illuminate\Support\Facades\Log; // Logファサードのインポート
 use App\Http\Controllers\ChargeController;
-
+use App\Http\Controllers\DownloadController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -67,6 +68,12 @@ Route::middleware('auth')->get('/api/orders', [OrderController::class, 'index'])
 Route::middleware('auth')->get('/order', function () {
     return Inertia::render('Order');
 })->name('order');
+
+Route::middleware('auth')->get('/order_type_b', function () {
+    return Inertia::render('OrderTypeB');
+})->name('order_type_b');
+
+
 Route::middleware('auth')->get('/order_start', function () {
     return Inertia::render('Order_start');
 })->name('order_start');
@@ -75,15 +82,21 @@ Route::middleware('auth')->get('/order_start', function () {
 
 // Route::get('/order', [OrderController::class, 'index'])->name('order.index');
 // Route::resource('item',ItemController::class);
-Route::get('/items',[ItemController::class, 'index'])->name('item.index');
+Route::get('/items',[ItemController::class, 'index'])->name('item.index')->middleware('admin');
 Route::post('item/store',[ItemController::class,'store'])->name('item.store');
-Route::get('item/order/{order}', [ItemController::class, 'show_order'])->name('item.show_order');
+Route::get('item/order/{order}', [ItemController::class, 'show'])->name('item.show');
 Route::put('item/{item}',[ItemController::class,'update'])->name('item.update');
-Route::get('item/{item}',[ItemController::class,'show'])->name('item.show');
+// Route::get('item/{item}',[ItemController::class,'show'])->name('item.show');
 Route::get('item/{item}/edit',[ItemController::class, 'edit'])->name('item.edit');
 Route::get('/items/group_order', 'ItemController@index_group_order')->name('item.index_group_order');
 
 
+// Route::resource('/upload', 'UploadController');
+Route::get('/uploads',[UploadController::class,'index'])->name('upload.index');
+Route::post('/upload',[UploadController::class,'store'])->name('upload.store');
+Route::get('upload/complete/{filename}', [UploadController::class, 'complete'])->name('upload.complete');
+
+Route::get('/download', [DownloadController::class, 'index'])->name('download.index');
 
 
 Route::get('/posts', [PostController::class, 'index'])->name('post.index');

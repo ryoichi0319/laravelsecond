@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Log;
 use App\Models\Order;
 use Illuminate\Support\Composer;
 use Illuminate\Support\Facades\Auth;
+
 class ItemController extends Controller
 {
     //
@@ -67,10 +68,9 @@ class ItemController extends Controller
         return view('item.index',compact('items','group_items') );
 
     }
-    public function show(Item $item, Order $order){
-        
-        return view('item.show',compact('item'));
-    }
+    // public function show( Order $order){
+    //     return view('item.show',compact('item'));
+    // }
     public function update(Request $request, Item $item){
         $item->status = $request->status;
         $item->save();
@@ -79,30 +79,40 @@ class ItemController extends Controller
 
     }
 
-    public function show_order(Request $request, Item $item,$id){
-        
-
- // 注文 ID を使用して、注文データを取得
- $order = Order::find($id);
-       
- // アイテムを注文と共に取得
- $items = Item::where('order_id', $id)->get();
-
- // 合計金額を初期化
- $total = 0;
-
- // 各アイテムの価格と数量を使用して合計金額を計算
- foreach ($items as $item) {
-     $total += $item->price * $item->quantity;
- }
-
- // 注文データに合計金額を追加
- $order->total_amount = $total;
-
- // 注文データを保存
- $order->save();    
- return view('item.order.show_order', compact('item', 'order'));
+    public function show(Request $request, Item $item, $id)
+    {
+        // 注文 ID を使用して、注文データを取得
+        $order = Order::find($id);
+    
+        if (!$order) {
+            abort(404, '注文が見つかりませんでした');
+        }
+    
+        // アイテムを注文と共に取得
+        $items = Item::where('order_id', $id)->get();
+    
+        // 合計金額を初期化
+        $total = 0;
+    
+        // 各アイテムの価格と数量を使用して合計金額を計算
+        foreach ($items as $item) {
+            $total += $item->price * $item->quantity;
+        }
+    
+        // 注文データに合計金額を追加
+        $order->total_amount = $total;
+    
+        // 注文データを保存
+        $order->save();
+        Log::debug('User ID: ' . auth()->id());
+        Log::debug('Order ID: ' . $order->id);
+        Log::debug('Item ID: ' . $item->id);
+    
+        // ポリシーを使用してユーザーの権限をチェック
+        $this->authorize('view', [$order, $item]);
+        return view('item.order.show', compact('item', 'order'));
     }
+    
 
     public function edit(Item $item)
     {

@@ -59,6 +59,12 @@
                         <td colspan="5"></td>
                         <td class="p-3" colspan="2"><strong>Total for Order {{$orderId}}:</strong></td>
                         <td class="p-3">{{ $total }}</td>
+                        <div>
+                            @php
+                                $test = "aaa";
+                                echo '$test'."$test";
+                            @endphp
+                        </div>
                     </tr>
                 @endforeach
             </tbody>

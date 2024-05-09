@@ -101,21 +101,18 @@ const Order = ({order_id}) => {
        });
     }, []);
 
-    //テスト
-    // useEffect(() => {
-    //     axios.get("http://localhost/item1.json")
-    //     .then(res => {
-    //          setTest(res.data.menu);
-    //     })
-    //     .catch((err) => {
-    //          console.error('fetching error', err);
-    //     });
-    //  }, []);
+      
     useEffect(() => {
-    console.log(menu,"menu")
+        axios.get("http://localhost/item1.json")
+        .then(res => {
+             setTest(res.data.menu);
+        })
+        .catch((err) => {
+             console.error('fetching error', err);
+        });
+     }, []);
 
-    },[])
-
+   
 
     
     //orderIndex !== -1は既存の注文が見つかった場合(カテゴリーを始めて選んだ場合)
@@ -136,6 +133,7 @@ const Order = ({order_id}) => {
 
     };
     
+    
     const handleQuantityChange = (category, event) => {
         const quantity = parseInt(event.target.value);
         const orderIndex = orders.findIndex(order => order.category === category);
@@ -148,7 +146,8 @@ const Order = ({order_id}) => {
 
      // 注文合計金額を計算する関数
      const calculateTotalAmount = () => {
-        return orders.reduce((total, order) => total + (order.amount * order.quantity), 0);
+        const total = orders.reduce((total, order) => total + (order.amount * order.quantity), 0);
+        return total.toLocaleString();
     };
 //     },[])
     const handleSubmit = (e) => {
@@ -168,82 +167,13 @@ const Order = ({order_id}) => {
         console.log(error);
        });
     };
-    //typeB_change
-    const handleCheckboxChange = (event) => {
-        const itemName = event.target.name;
-        if (event.target.checked) {
-            setItems([...items, itemName]);
-        } else {
-            setItems(items.filter(item => item !== itemName));
-        }
-    };
- 
-     //typeB_submit
-     const handleTypeBSubmit = (e) => {
-        e.preventDefault();
-        // サーバーに注文データを送信
-        axios.post("/item", { items })
-        .then(res => {
-         console.log("Data sent successfully:", res.data,"res.data");
-        })
-        .catch(error => {
-         console.log(error);
-        });
-     };
+    
 
- 
-    const add = () => {
-        if (inputValue.trim() !== '') { // ユーザーが空のToDoを追加しないようにする
-            const newTodos = [...todos, { value: inputValue, boolean: false }];
-            setTodos(newTodos);
-            setInputValue(''); // 入力フィールドを空にする
-        }
-    }
-    const foods = {
-        'fruits': ['apple', 'orange'],
-        'vege': ['potato', 'onion']
-    };
-
-    const people = [
-        {name: 'alice', age:25 },
-        {name: 'bob', age:30},
-        {name: 'charlie', age:35}
-    ]
-    const numbers = [1, 2, 3,4,5]
-
-    for(let i = 0; i< Math.min(people.length,numbers.length); i++){
-        console.log(`person ${people[i].name} is ${people[i].age}
-        years old and has number ${numbers[i]}`)
-    }
-
-    return (
-        <div className="italian-background text-center mx-auto max-w-4xl">
+       return (
+        <div className="italian-background text-center mx-auto max-w-2xl">
             <StyledText>
 
-           {/* {Object.keys(foods).map(food => (
-    <div key={food}>
-        <div className=" text-red-300"> {food}</div>
-        {foods[food].map((m, index) => (
-            <div key={index}>{m}</div>
-        ))}
-    </div>
-))}
-            <input 
-                type="text" 
-                value={inputValue} 
-                onChange={(e) => setInputValue(e.target.value)}
-            />       
-            <button onClick={add}>ボタン</button>
-            <div>
-                {todos.map((todo, index) => (
-                    <div key={index}>
-                    <div >{todo.value}</div>
-                    <input type="checkbox" value={todo.boolean}/>
-                    </div>
-                    
-                
-                ))}
-            </div> */}
+       
 
             
             
@@ -265,33 +195,28 @@ const Order = ({order_id}) => {
                             <Select
                             value={orders.find(order => order.category === category)?.selectedItem || ""}
                             onChange={(e) => handleSelectChange(category, e)}
-                            variant="outlined"
+                            variant="outlined"                            
+                            sx={{background: "#f9f5ea"}}
+                            
                           >
+                            
                                 <MenuItem value="">
                                    <em>Select item</em>
                                 </MenuItem>
                                 {menu[category].map((item, index) => (
-                                    <MenuItem key={index} value={item.name}>
-                                        <div className=" flex gap-10 flex-1 items-center">
-                                        <div className=" flex-1">
-                                      {item.name}
-                                        </div>
-                               
-                                    <div className=" flex-1">
-                                        <img className="w-12 h-12" src={item.img_url} alt="" />
+                            <MenuItem key={index} value={item.name}>
+                                <div className="flex items-center flex-1">
+                                    <div className="w-3/5 font-mono text-xl">{item.name}</div>
+                                    <div className="w-1/5">￥{item.amount.toLocaleString()}</div>
+                                    <div className="w-1/5">
+                                        <img className="w-24 h-24 rounded-md shadow-md" src={item.img_url} alt="" />
                                     </div>
-                                    <div className="flex-1">
-                                   ￥{item.amount}
-                                   </div>
-                                    </div>
-                                </MenuItem>
-                                ))}
-                                
+                                </div>
+                            </MenuItem>
+))}
                             </Select>
                             </FormControl>
                             </Grid>
-
-
                             {orders.map(order => order.category === category) && (
                                 <span>
                                     {orders.map((order) => order.price)}
@@ -303,7 +228,9 @@ const Order = ({order_id}) => {
                            <FormControl className=" w-36  ">
                             {orders.find(order => order.category === category && order.selectedItem) && (
                                     <Select value={orders.find(order => order.category === category)?.quantity || 0} 
-                                                    onChange={(e) => handleQuantityChange(category, e)}>
+                                            onChange={(e) => handleQuantityChange(category, e)}
+                                                 
+                                                    >
 
                                                      {[ 1, 2, 3, 4, 5].map(value => (
                                             <MenuItem key={value} value={value} className=" w-96" >
@@ -315,10 +242,14 @@ const Order = ({order_id}) => {
                             )}
                             </FormControl>
                         </Grid>
-}
-                             </div>
+                      }  
 
+                                             </div>
                     ))}
+                    
+
+
+
                   <Button type="submit" variant="contained" color="success" startIcon={<SendIcon />}
                   fullWidth sx={{ mt: 4 }} disabled={!orders.length}>
                     Submit Order
@@ -339,8 +270,6 @@ const Order = ({order_id}) => {
 
                             </div>
 
-
-
                         ))}
                     
 
@@ -349,60 +278,24 @@ const Order = ({order_id}) => {
                 
             )}
 
-{/**第二オーダー */}
-          {/* <div>
-    {menu && (
-        <form onSubmit={handleTypeBSubmit}>
-        {Object.keys(menu).map(category => (
-        <div key={category} className="">
-            <h2>{category}</h2>
-            {menu[category].map((item, index) => (
-                <div key={index}>
-                    <input 
-                        onChange={handleCheckboxChange}
-                        type="checkbox" 
-                        name={`${category}-${item.name}`} 
-                        id={`${category}-${item.name}`} 
-                    />
-                    <label htmlFor={`${category}-${item.name}`}>
-                        {item.name} ￥{item.amount}
-                    </label>
-                </div>
-            ))}
-        </div>
-        
-    ))}
-                        <button type="submit">送信</button>
 
-
-                        
-
-    </form>
-     ) } 
-</div>
-            
-          
-      <button onClick={handleSetCookie}>Cookieを設定する</button>
-    </div> */}
-      <div>
+      <div className=" text-gray-800">
                 合計金額: ￥{calculateTotalAmount()}
             </div>
-            <div></div>
 
-    <div>
-        {cookies.name && (
-          <p>設定されたCookieの値は: {cookies.name}</p>
-        )}
-      </div>
+                    <div>
+  
+          
+      <button onClick={handleSetCookie}>Cookieを設定する</button>
+    </div> 
+
+            
     
 
       <div ref={elementRef}>
-      <div className=" font-extrabold text-5xl text-center  ">
-        this is animation
+    
       </div>
-      </div>
-
-            {/* <div>
+        <div>
                {test && test.map((m,index) => (
                 <div key={index}>
                     {m.category}
@@ -411,7 +304,9 @@ const Order = ({order_id}) => {
                ))}
                {test && test[0].category}
                
-            </div> */}
+            </div>
+
+         
             </StyledText>
         </div>
     );

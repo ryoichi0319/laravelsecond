@@ -56,6 +56,24 @@
     "amount": 1500,
     "quantity": 0,
     "img_url":"/img/ペペロンチーノ.jpg"
+  },
+  {
+    "name": "ボロネーゼ",
+    "amount": 1500,
+    "quantity": 0,
+    "img_url":"/img/ペペロンチーノ.jpg"
+  },
+  {
+    "name": "帆立のペペロンチーノ",
+    "amount": 1500,
+    "quantity": 0,
+    "img_url":"/img/ペペロンチーノ.jpg"
+  },
+  {
+    "name": "オイルサーディンのペペロンチーノ",
+    "amount": 1500,
+    "quantity": 0,
+    "img_url":"/img/ペペロンチーノ.jpg"
   }
 ]
   }

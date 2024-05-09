@@ -118,45 +118,25 @@ const Order = ({order_id}) => {
     //orderIndex !== -1は既存の注文が見つかった場合(カテゴリーを始めて選んだ場合)
     //もしも既存の注文があれば新しいorders配列のカテゴリーのインデックスにあうメニューに例(category: 'salad', selectedItem: 'フレッシュ', quantity: 0)追加
     const handleSelectChange = (category, event) => {
-        const selectedItems = event.target.value; // 複数のアイテムを配列として取得
-        const updatedOrders = [...orders];
-    
-        // 新しい選択されたアイテムの情報を追加または更新
-        selectedItems.forEach(selectedItem => {
-            const selectedItemData = menu[category].find(item => item.name === selectedItem);
-            const amount = selectedItemData ? selectedItemData.amount : 0;
-            const orderIndex = updatedOrders.findIndex(order => order.category === category && order.selectedItem === selectedItem);
-            console.log(orderIndex,"orderindex")
-            if (orderIndex !== -1) {
-                // すでに注文が存在する場合、何もしない
-            } else if(orderIndex !== -1){
-
-
-            }
-            else {
-                // 新しい注文を追加
-                updatedOrders.push({ category, selectedItem, quantity: 1, amount });
-            }
-        });
-
-    
-        // 更新された注文をセット
-        setOrders(updatedOrders);
+        const selectedItem = event.target.value;
+        const selectedItemData = menu[category].find(item => item.name === selectedItem);
+        const amount = selectedItemData ? selectedItemData.amount : 0;
+        const newOrder = { category, selectedItem, quantity: 1, amount };
+        
+        // orders状態に新しい注文を追加する
+        setOrders(prevOrders => [...prevOrders, newOrder]);
     };
-    useEffect(() => {
-        console.log(orders,"orders")
-    },[orders])
     
-    
+    // カテゴリーとアイテム名に基づいて注文の数量を変更する関数を修正する
     const handleQuantityChange = (category, selectedItem, event) => {
         const quantity = parseInt(event.target.value);
-        const updatedOrders = [...orders];
-        const orderIndex = updatedOrders.findIndex(order => order.category === category && order.selectedItem === selectedItem);
-    
-        if (orderIndex !== -1) {
-            updatedOrders[orderIndex].quantity = quantity;
-            setOrders(updatedOrders);
-        }
+        setOrders(prevOrders =>
+            prevOrders.map(order =>
+                order.category === category && order.selectedItem === selectedItem
+                    ? { ...order, quantity }
+                    : order
+            )
+        );
     };
      // 注文合計金額を計算する関数
      const calculateTotalAmount = () => {
@@ -183,11 +163,13 @@ const Order = ({order_id}) => {
     };
     
 
-
-
        return (
-        <div className="italian-background text-center mx-auto max-w-5xl ">
+        <div className="italian-background text-center mx-auto max-w-2xl">
             <StyledText>
+
+       
+
+            
             
             {menu && (
                 <Container maxWidth="md">
@@ -197,71 +179,86 @@ const Order = ({order_id}) => {
                     </Typography>
                 <form onSubmit={handleSubmit} className=" ">
                     
-                {Object.keys(menu).map(category => (
-                <div key={category} className="   ">
-                    <div className=" p-3 text-red-400 font-bold text-xl flex-none  ">{category}</div>
-                    <div className="flex  ">
-                    <div className="flex-1  " >
-            <Grid item key={category}>
-                <FormControl fullWidth>
-                    <InputLabel>Select item</InputLabel>
-                    <Select
-                        value={orders.filter(order => order.category === category).map(order => order.selectedItem)} // 選択されたアイテムの配列をvalueにセット
-                        onChange={(e) => handleSelectChange(category, e)}
-                        variant="outlined"
-                        className=""
-                        sx={{background: "#f9f5ea"}}
-                        multiple
+                    {Object.keys(menu).map(category => (
+                        <div key={category}>
+                            <span className=" p-3 text-red-400 font-bold text-xl">{category}</span>
+                            <Grid item  key={category}>
 
-                    >
-                    {/* メニューアイテムを表示 */}
-                    {menu[category].map((item, index) => (
-                        <MenuItem key={index} value={item.name}>
-                            <div className="flex items-center flex-1 border  border-y-stone-200 ">
-                                <div className="w-3/5 font-mono text-xl">{item.name}</div>
-                                <div className="w-1/5">￥{item.amount.toLocaleString()}</div>
-                                <div className="w-1/5">
-                                    <img className="w-24 h-24 rounded-md shadow-md" src={item.img_url} alt="" />
-                                </div>
-                                
-                            </div>
+                            <FormControl fullWidth>
+                          <InputLabel>Select item</InputLabel>
+                            <Select
+                            value={orders.find(order => order.category === category)?.selectedItem || []}
+                            onChange={(e) => handleSelectChange(category, e)}
+                            variant="outlined"                            
+                            sx={{background: "#f9f5ea"}}
+                            multiple
+                          >
                             
+                                <MenuItem value="">
+                                   <em>Select item</em>
+                                </MenuItem>
+                                {menu[category].map((item, index) => (
+                            <MenuItem key={index} value={item.name}>
+                                <div className="flex items-center flex-1">
+                                    <div className="w-3/5 font-mono text-xl">{item.name}</div>
+                                    <div className="w-1/5">￥{item.amount.toLocaleString()}</div>
+                                    <div className="w-1/5">
+                                        <img className="w-24 h-24 rounded-md shadow-md" src={item.img_url} alt="" />
+                                    </div>
+                                </div>
+                            </MenuItem>
+))}
+                            </Select>
+                            </FormControl>
+                            </Grid>
+                            {orders.map(order => order.category === category) && (
+                                <span>
+                                    {orders.map((order) => order.price)}
+                                </span>
+                            )}
+                       {  
+                          <Grid item xs={4} className=" flex justify-end">
+
+                           <FormControl className=" w-36  ">
+                            {orders.find(order => order.category === category && order.selectedItem) && (
+                                    <Select value={orders.find(order => order.category === category)?.quantity || 0} 
+                                            onChange={(e) => handleQuantityChange(category, e)}
+                                                 
+                                                    >
+
+                                                     {[ 1, 2, 3, 4, 5].map(value => (
+                                            <MenuItem key={value} value={value} className=" w-96" >
+                                                {value}
+                                            </MenuItem>
+                                        ))}
+                                    </Select>  
+   
+                            )}
+                            </FormControl>
+                        </Grid>
+                      } 
+                      {orders
+    .filter(order => order.selectedItem && order.category === category)
+    .map(order => (
+        <Grid item xs={4} className="flex justify-end" key={order.selectedItem}>
+            <FormControl className="w-36">
+                <Select
+                    value={order.quantity || 0}
+                    onChange={(e) => handleQuantityChange(category, order.selectedItem, e)}
+                >
+                    {[1, 2, 3, 4, 5].map(value => (
+                        <MenuItem key={value} value={value}>
+                            {value}
                         </MenuItem>
-                        
-                        
                     ))}
                 </Select>
             </FormControl>
         </Grid>
-        </div>
-        {/* 選択されたアイテムごとに数量を表示 */}
-        <div className="  flex flex-col justify-evenly "> 
-        {orders.filter(order => order.category === category ).map(order => (
-            <Grid item xs={4} 
-            className="  " 
-            key={order.selectedItem}>
-                <FormControl className="">
-                    <Select
+    ))
+}
 
-                        variant="outlined"
-                        value={order.quantity}
-                        onChange={(e) => handleQuantityChange(category, order.selectedItem, e)}
-                        className="  p-8 ml-2  "
-                    >
-                        {[1, 2, 3, 4, 5].map(value => (
-                            <MenuItem key={value} value={value}>
-                                {value}
-                            </MenuItem>
-                        ))}
-                    </Select>
-                </FormControl>
-            </Grid>
-        ))}
-        </div>
-    </div>
-    </div>
-))}
-
+                                             </div>
+                    ))}
                     
 
 
@@ -293,8 +290,6 @@ const Order = ({order_id}) => {
                 </Container>
                 
             )}
-
-         
 
 
       <div className=" text-gray-800">

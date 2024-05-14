@@ -122,26 +122,24 @@ const Order = ({order_id}) => {
         const updatedOrders = [...orders];
     
         // 新しい選択されたアイテムの情報を追加または更新
-        selectedItems.forEach(selectedItem => {
+        selectedItems.map(selectedItem => {
             const selectedItemData = menu[category].find(item => item.name === selectedItem);
             const amount = selectedItemData ? selectedItemData.amount : 0;
-            const orderIndex = updatedOrders.findIndex(order => order.category === category && order.selectedItem === selectedItem);
-            console.log(orderIndex,"orderindex")
+            const orderIndex = updatedOrders.findIndex(order => order.selectedItem === selectedItem && order.category === category);
+          
             if (orderIndex !== -1) {
-                // すでに注文が存在する場合、何もしない
-            } else if(orderIndex !== -1){
-
-
-            }
-            else {
+                // const lastOrderIndex = updatedOrders.length - 1
+                // setOrders(prev => prev.filter(order => order.selectedItem !== updatedOrders[lastOrderIndex].selectedItem))
+            } else {
                 // 新しい注文を追加
-                updatedOrders.push({ category, selectedItem, quantity: 1, amount });
+             
+                   updatedOrders.push({ category, selectedItem, quantity: 1, amount, completed:false })
             }
         });
+        setOrders(updatedOrders);
 
     
         // 更新された注文をセット
-        setOrders(updatedOrders);
     };
     useEffect(() => {
         console.log(orders,"orders")
@@ -181,8 +179,24 @@ const Order = ({order_id}) => {
         console.log(error);
        });
     };
-    
 
+    const handleCheckboxChange = (category, selectedItem) => {
+        const updatedOrders = orders.map(order => {
+            if (order.category === category && order.selectedItem === selectedItem) {
+                return {
+                    ...order,
+                    completed: !order.completed // completed フラグをトグル
+                };
+            }
+            return order
+        });
+        setOrders(updatedOrders);
+    };
+    const handleDeleteOrder = () => {
+        const updatedOrders = orders.filter(order => !( order.completed));
+        setOrders(updatedOrders);
+    };
+    
 
 
        return (
@@ -214,11 +228,13 @@ const Order = ({order_id}) => {
                         multiple
 
                     >
+
                     {/* メニューアイテムを表示 */}
                     {menu[category].map((item, index) => (
                         <MenuItem key={index} value={item.name}>
                             <div className="flex items-center flex-1 border  border-y-stone-200 ">
                                 <div className="w-3/5 font-mono text-xl">{item.name}</div>
+                                
                                 <div className="w-1/5">￥{item.amount.toLocaleString()}</div>
                                 <div className="w-1/5">
                                     <img className="w-24 h-24 rounded-md shadow-md" src={item.img_url} alt="" />
@@ -226,27 +242,33 @@ const Order = ({order_id}) => {
                                 
                             </div>
                             
-                        </MenuItem>
-                        
+                            
+                        </MenuItem>  
                         
                     ))}
+                    
                 </Select>
+
+
             </FormControl>
         </Grid>
         </div>
+        
         {/* 選択されたアイテムごとに数量を表示 */}
+
         <div className="  flex flex-col justify-evenly "> 
         {orders.filter(order => order.category === category ).map(order => (
+
             <Grid item xs={4} 
             className="  " 
             key={order.selectedItem}>
-                <FormControl className="">
-                    <Select
 
-                        variant="outlined"
+                <FormControl className="">
+                    
+                    <Select
                         value={order.quantity}
                         onChange={(e) => handleQuantityChange(category, order.selectedItem, e)}
-                        className="  p-8 ml-2  "
+                        className="  p-4 ml-2  "
                     >
                         {[1, 2, 3, 4, 5].map(value => (
                             <MenuItem key={value} value={value}>
@@ -256,15 +278,23 @@ const Order = ({order_id}) => {
                     </Select>
                 </FormControl>
             </Grid>
+            
         ))}
+        
         </div>
-    </div>
+        <div className="flex flex-col justify-evenly"> 
+               {orders.filter(order => order.category === category).map(order => (
+        <div key={order.selectedItem}>
+            <div className=" flex flex-col">
+            <input type="checkbox" className="p-5 mx-auto" checked={order.completed} onChange={() => handleCheckboxChange(category, order.selectedItem)} />
+            <button className="p-1 m-1 border bg-red-500 text-white rounded-md" type="button" onClick={() => handleDeleteOrder()}>削除</button>
+            </div>
+        </div>
+    ))}
+         </div>
+      </div>
     </div>
 ))}
-
-                    
-
-
 
                   <Button type="submit" variant="contained" color="success" startIcon={<SendIcon />}
                   fullWidth sx={{ mt: 4 }} disabled={!orders.length}>
@@ -282,29 +312,19 @@ const Order = ({order_id}) => {
         <div className="text-lg text-white">テーブル番号: {order.table_number}</div>
                       </div>
                       </InertiaLink>
-
-
                             </div>
-
                         ))}
-                    
-
                 </form>
                 </Container>
                 
             )}
 
-         
-
-
       <div className=" text-gray-800">
                 合計金額: ￥{calculateTotalAmount()}
             </div>
-
                     <div>
   
-          
-      <button onClick={handleSetCookie}>Cookieを設定する</button>
+      {/* <button onClick={handleSetCookie}>Cookieを設定する</button> */}
     </div> 
 
             
@@ -313,7 +333,7 @@ const Order = ({order_id}) => {
       <div ref={elementRef}>
     
       </div>
-        <div>
+        {/* <div>
                {test && test.map((m,index) => (
                 <div key={index}>
                     {m.category}
@@ -322,7 +342,7 @@ const Order = ({order_id}) => {
                ))}
                {test && test[0].category}
                
-            </div>
+            </div> */}
 
          
             </StyledText>

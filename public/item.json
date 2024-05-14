@@ -11,7 +11,7 @@
       
     },{
      
-        "name": "チーズ",
+        "name": "チーズサラダ",
         "amount": 1500,
         "quantity": 0,
         "img_url": "/img/カルパッチョ.jpg"
@@ -29,7 +29,7 @@
     
   },{
    
-      "name": "チーズ",
+      "name": "チーズピザ",
       "amount": 1500,
       "quantity": 0,
       "img_url": "/img/チーズピザ.jpg"
@@ -39,14 +39,14 @@
   }],
   "pasta": [{
       
-    "name": "トマト",
+    "name": "トマトパスタ",
     "amount": 1000,
     "quantity": 0,
     "img_url": "/img/トマト.jpg"
   
 },
 {
-    "name": "クリーム",
+    "name": "クリームパスタ",
     "amount": 1500,
     "quantity": 0,
     "img_url": "/img/クリーム.jpg"

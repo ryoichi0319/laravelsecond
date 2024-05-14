@@ -12,7 +12,7 @@
     <!-- Tailwind CSS -->
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <!-- Scripts -->
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @vite(['resources/css/app.css','resources/js/app.jsx'])
 </head>
 <body class="font-sans antialiased bg-gray-100">
     <div class="container mx-auto py-6">
@@ -59,12 +59,7 @@
                         <td colspan="5"></td>
                         <td class="p-3" colspan="2"><strong>Total for Order {{$orderId}}:</strong></td>
                         <td class="p-3">{{ $total }}</td>
-                        <div>
-                            @php
-                                $test = "aaa";
-                                echo '$test'."$test";
-                            @endphp
-                        </div>
+                       
                     </tr>
                 @endforeach
             </tbody>

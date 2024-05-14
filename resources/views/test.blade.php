@@ -1,6 +1,5 @@
 <x-app-layout>
     <x-slot name="header">
-        <h1>aaa</h1>
     </x-slot>
     @foreach($fruits as $f)
         {{ $f }}
